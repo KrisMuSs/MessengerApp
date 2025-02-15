@@ -4,6 +4,7 @@ import SwiftUI
 
 struct LoginView: View {
     
+    
     @State private var email = ""
     @State private var password = ""
     
@@ -68,6 +69,7 @@ struct LoginView: View {
                 // facebook login
                 HStack{
                     Rectangle()
+                    // Устанавливаем ширину прямоугольника в половину экрана минус 40 поинтов
                         .frame(width: (UIScreen.main.bounds.width / 2) - 40, height: 0.5)
                     
                     Text("OR")
@@ -75,6 +77,7 @@ struct LoginView: View {
                         .fontWeight(.semibold)
                     
                     Rectangle()
+                    // Устанавливает ширину прямоугольника в половину экрана минус 40 поинтов
                         .frame(width: (UIScreen.main.bounds.width / 2) - 40, height: 0.5)
                 }
                 .foregroundStyle(.gray)
@@ -96,7 +99,8 @@ struct LoginView: View {
                 Divider()
                 
                 NavigationLink {
-                    Text("Sign up View")
+                    RegistrationView()
+                        .navigationBarBackButtonHidden()
                 } label: {
                     HStack(spacing: 3){
                         Text("Don't have an account ?")
