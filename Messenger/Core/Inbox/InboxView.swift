@@ -3,7 +3,9 @@
 import SwiftUI
 
 struct InboxView: View {
+    
     @State private var showNewMessage = false
+    @State private var user = User.MOCK_USER
     
     var body: some View {
         NavigationStack{
@@ -20,17 +22,24 @@ struct InboxView: View {
                 // в том, что список сам по себе является прокруткой (Scroll)
                 .frame(height: UIScreen.main.bounds.height - 120)
             }
+            .navigationDestination(for: User.self, destination: { user in
+                ProfileView(user: user)
+            })
+            // Открытие экрана создания нового сообщения. Открывается поверх текущего интерфейса
             .fullScreenCover(isPresented: $showNewMessage, content: {
                 NewMessageView()
             })
             .toolbar{
                 ToolbarItem(placement: .topBarLeading) {
                     HStack{
-                        Image(systemName: "person.circle.fill")
+                        NavigationLink(value: user) {
+                            CircularProfileImageView(user: user, size: .xSmall)
+                        }
                         
                         Text("Chats")
                             .font(.title)
                             .fontWeight(.semibold)
+                        
                     }
                 }
                 

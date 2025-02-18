@@ -1,29 +1,48 @@
 
 
 import SwiftUI
+import PhotosUI
+
 
 struct ProfileView: View {
+    
+    @State var viewModel = ProfileViewModel()
+    let user: User
+    
     var body: some View {
         //header
         VStack{
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: 80, height: 80)
-                .foregroundStyle(Color(.systemGray4))
+            PhotosPicker(selection: $viewModel.selectedItem ){
+                if let profileImage = viewModel.profileImage{
+                    profileImage
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 80, height: 80)
+                        .clipShape(Circle())
+                } else {
+                    CircularProfileImageView(user: user, size: .xLarge)
+                }
+            }
+            Text(user.fullname)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                
+            
         }
         
         
         //list
         List{
             Section{
-                ForEach(0 ... 5, id: \.self){ option in
+                ForEach(SettingOptionsViewModel.allCases){ option in
                     HStack {
-                        Image(systemName: "bell.circle.fill")
+                        Image(systemName: option.imageName)
                             .resizable()
                             .frame(width: 24, height: 24)
-                            .foregroundStyle(Color(.systemPurple))
+                            .foregroundStyle(option.imageBackgroundColor)
                         
-                        Text("Notification")
+                        Text(option.title)
+                            .font(.subheadline)
                     }
 
                 }
@@ -44,5 +63,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView()
+    ProfileView(user: User.MOCK_USER)
 }
