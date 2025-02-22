@@ -1,17 +1,13 @@
-//
-//  RegistrationView.swift
-//  Messenger
-//
-//  Created by Артем Мерзликин on 13.02.2025.
-//
+
+// Возможное расширение: Добавить оповещения о неправильности ввода
+// маил или пароля. Просто вывести error из AuthService
 
 import SwiftUI
 
 struct RegistrationView: View {
     
-    @State private var email = ""
-    @State private var password = ""
-    @State private var fullname = ""
+    
+    @StateObject var viewModel = RegistrationViewModel()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -25,21 +21,22 @@ struct RegistrationView: View {
                 .padding()
             // logo fields
             VStack{
-                TextField("Enter your email", text: $email)
+                TextField("Enter your email", text: $viewModel.email)
                     .font(.subheadline)
                     .padding(12)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
                     .padding(.horizontal, 24)
                 
-                TextField("Enter your email", text: $email)
+                
+                TextField("Enter your fullname", text: $viewModel.fullname)
                     .font(.subheadline)
                     .padding(12)
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
                     .padding(.horizontal, 24)
                 
-                SecureField("Enter your password", text: $password)
+                SecureField("Enter your password", text: $viewModel.password)
                     .font(.subheadline)
                     .padding(12)
                     .background(Color(.systemGray6))
@@ -48,9 +45,9 @@ struct RegistrationView: View {
             }
             
             Button {
-                print("Handle login")
+                Task{ try await viewModel.createUser() }
             } label: {
-                Text("Sugn up")
+                Text("Sign up")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
