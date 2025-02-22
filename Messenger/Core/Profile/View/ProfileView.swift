@@ -50,14 +50,14 @@ struct ProfileView: View {
             
             Section{
                 Button("Log Out"){
-                    
+                    AuthService.shared.signOut()
                 }
                 
                 Button("Delete Account"){
                     
                 }
             }
-            
+            .foregroundStyle(.red)
         }
     }
 }

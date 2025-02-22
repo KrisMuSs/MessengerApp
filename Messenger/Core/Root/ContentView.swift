@@ -7,15 +7,18 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView: View{
+    @StateObject var viewModel = ContentViewModel()
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        
+        Group{
+            // Если userSession != nil значит кто-то зашел в систему
+            if viewModel.userSession != nil {
+                InboxView()
+            } else {
+                LoginView()
+            }
         }
-        .padding()
     }
 }
 
