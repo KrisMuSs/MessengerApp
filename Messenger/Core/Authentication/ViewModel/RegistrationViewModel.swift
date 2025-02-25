@@ -13,7 +13,7 @@ class RegistrationViewModel: ObservableObject {
 
     func createUser() async throws{
         // Вызываем вход пользователя и передаем email, пароль и полное имя
-        try await AuthService.shared.createUser(withEmail: email, password: password, fullName: fullname)
+        try await AuthService.shared.createUser(withEmail: email, password: password, fullname: fullname)
     }
     
 }

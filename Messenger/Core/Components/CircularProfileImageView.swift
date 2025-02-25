@@ -24,10 +24,11 @@ enum ProfileImageSize{
 
 
 struct CircularProfileImageView: View {
-    let user: User
+    var user: User?
     let size: ProfileImageSize
+    
     var body: some View {
-        if let imageUrl = user.profileImageUrl{
+        if let imageUrl = user?.profileImageUrl{
             Image(imageUrl)
                 .resizable()
                 .scaledToFill()
@@ -37,7 +38,7 @@ struct CircularProfileImageView: View {
         else{
             Image(systemName: "person.circle.fill")
                 .resizable()
-                .frame(width: 80, height: 80)
+                .frame(width: size.dimension, height: size.dimension)
                 .foregroundStyle(Color(.systemGray4))
         }
     }
