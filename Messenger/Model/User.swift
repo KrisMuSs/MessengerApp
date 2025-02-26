@@ -16,7 +16,7 @@ struct User: Codable, Identifiable, Hashable{
     
     
     // id автоматически использует uid из Firestore
-    // если оно не задано, создается случайный `UUID` (для безопасности)
+    // если оно не задано, создается случайный "UUID" (для безопасности)
     var id: String{
         return uid ?? UUID().uuidString
     }
