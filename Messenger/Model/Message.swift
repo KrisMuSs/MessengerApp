@@ -25,6 +25,7 @@ struct Message: Identifiable, Codable, Hashable {
     
     // Для логики помогающий нам определить, от кого пришло сообщение, от нас или собеседника
     var isFromCurrentUser: Bool {
+        // Если идентификатор отправителя совпадает с id текущего пользователя, то сообщение пришло от него
         return fromId == Auth.auth().currentUser?.uid
     }
 }
