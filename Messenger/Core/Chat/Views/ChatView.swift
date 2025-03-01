@@ -32,10 +32,12 @@ struct ChatView: View {
                 }
                 
                 // messages
-                
-                ForEach(viewModel.messages) { message in
-                    ChatMessageCell(message: message)
-            }
+                // когда пользователь прокручивает список, LazyVStack подгружает только те сообщения, которые попадают в область видимости
+                LazyVStack {
+                    ForEach(viewModel.messages) { message in
+                        ChatMessageCell(message: message)
+                }
+                }
                
             }
             
@@ -63,6 +65,8 @@ struct ChatView: View {
             }
             .padding()
         }
+        .navigationTitle(user.fullname)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

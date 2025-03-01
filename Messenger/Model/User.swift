@@ -20,6 +20,13 @@ struct User: Codable, Identifiable, Hashable{
     var id: String{
         return uid ?? UUID().uuidString
     }
+    // извлекает имя из полного имени, с помощью специального инструмента из Foundation
+    var firstName: String {
+        let formatter = PersonNameComponentsFormatter()
+        let components = formatter.personNameComponents(from: fullname)
+        return components?.givenName ?? fullname
+    }
+    
 }
 
 extension User {

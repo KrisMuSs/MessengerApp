@@ -17,26 +17,47 @@ struct InboxView: View {
     
     var body: some View {
         NavigationStack{
-            ScrollView{
-                ActiveNowView()
-                
                 List {
-                    ForEach(0 ... 10, id: \.self){ message in
-                        InboxRowView()
+                    ActiveNowView()
+                        .listRowSeparator(.hidden) // Скрываем разделители
+                        .listRowInsets(EdgeInsets()) // Убираем стандартные отступы
+                        .padding(.vertical)
+                        .padding(.horizontal, 4)
+                    
+                    ForEach(viewModel.recentMessages){ message in
+                        ZStack{
+                            // Для того, чтобы убрать стрелку от NavigationLink ( используем ZStack, EmptyView и opacity(0.0))
+                            NavigationLink(value: message) {
+                                EmptyView()
+                            }.opacity(0.0)
+                            InboxRowView(message: message)
+
+                        }
                     }
                 }
                 .listStyle(PlainListStyle())
-                // Решает конфликт с неотображением списка в ScrollView. Видимо проблема
-                // в том, что список сам по себе является прокруткойuser (Scroll)
-                .frame(height: UIScreen.main.bounds.height - 120)
-            }
+
             // При выборе польователя появляется чат
             .onChange(of: selectedUser, perform: { newValue in
                 // Если у выбранного пользователя есть значение, то чат будет отображаться
                 showChat = newValue != nil
             })
-            .navigationDestination(for: User.self, destination: { user in
-                ProfileView(user: user)
+            .navigationDestination(for: Message.self, destination: { message in
+                if let user = message.user {
+                    ChatView(user: user)
+                }
+            })
+            .navigationDestination(for: Route.self, destination: { route in
+                // Когда мы нажимаем NavigationLink(value: Route.profile(user)), в NavigationStack добавляется Route.profile(user)
+               // navigationDestination(for: Route.self, destination:) перехватывает это значение и проверяет, какой case в Route пришёл
+               // NavigationLink передает Route.profile или Route.chatView
+                    switch route{
+                    case .profile(let user):
+                        ProfileView(user: user)
+                    case .chatView(let user):
+                        ChatView(user: user)
+                    }
+                
             })
             // Если selectedUser = nil, то мы не хотим показывать чат. (дополнительная осторожность)
             .navigationDestination(isPresented: $showChat, destination: {
@@ -52,8 +73,10 @@ struct InboxView: View {
             .toolbar{
                 ToolbarItem(placement: .topBarLeading) {
                     HStack{
-                        NavigationLink(value: user) {
-                            CircularProfileImageView(user: user, size: .xSmall)
+                        if let user {
+                            NavigationLink(value: Route.profile(user)) {
+                                CircularProfileImageView(user: user, size: .xSmall)
+                            }
                         }
                         
                         Text("Chats")
@@ -66,6 +89,7 @@ struct InboxView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showNewMessage.toggle()
+                        selectedUser = nil
                     } label: {
                         Image(systemName: "square.and.pencil.circle.fill")
                             .resizable()
@@ -79,6 +103,6 @@ struct InboxView: View {
         }
     }
 }
-#Preview {
-    InboxView()
-}
+//#Preview {
+//    InboxView()
+//}

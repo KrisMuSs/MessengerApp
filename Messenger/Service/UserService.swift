@@ -5,14 +5,14 @@ import FirebaseAuth
 import Firebase
 
 
-// Эта служба будет отвечать за получение всей информации из Firebase ( будем получать информацию о пользователях, которые являются нашими контактами
+/// Эта служба отвечает за получение всей информации из Firebase (служит для получения информации о пользователях, которые являются нашими контактами)
 class UserService {
     @Published var currentUser: User?
     
     static let shared = UserService()
     
     @MainActor
-   // Загружаем данные пользователя из Firestore
+   /// Загружаем данные пользователя из Firestore
     func fetchCurrentUser() async throws {
         // Убеждаемся, что у нас есть авторизованный пользователь, иначе останавливаем
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -23,11 +23,22 @@ class UserService {
         self.currentUser = user
 
     }
-    // Функция вернет всех пользователей
-    static func fetchAllUsers() async throws -> [User]{
+    /// Функция вернет всех пользователей (есть возможность указать лимит сколько пользователей вернуть)
+    static func fetchAllUsers(limit: Int? = nil) async throws -> [User]{
+        let query = FirestoreConstants.UserCollections
+        if let limit { query.limit(to: limit) }
         let snapshot = try await Firestore.firestore().collection("users").getDocuments()
         let users = snapshot.documents.compactMap({ try? $0.data(as: User.self ) })
         return users
     }
-}
+    
+    static func fetchUser(withUid uid: String, completion: @escaping(User) -> Void) {
+        FirestoreConstants.UserCollections.document(uid).getDocument { snapshot, _ in
+            guard let user = try? snapshot?.data(as: User.self) else { return }
+            completion(user)
+            }
+        }
+    }
+    
+
 

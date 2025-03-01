@@ -39,7 +39,3 @@ struct ChatMessageCell: View {
         .padding(.horizontal, 8)
     }
 }
-
-//#Preview {
-//    ChatMessageCell(isFromCurrentUser: false)
-//}
