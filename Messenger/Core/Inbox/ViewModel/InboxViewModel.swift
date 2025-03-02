@@ -7,7 +7,8 @@ import Firebase
 class InboxViewModel: ObservableObject{
     @Published var currentUser: User?
     @Published var recentMessages = [Message]()
-
+    @Published var isNotRead = [String: Bool]()
+    
     /// Переменная для хранения ссылок на активные процессы, которые следят за изменениями
     private var cancellables = Set<AnyCancellable>()
     
@@ -45,6 +46,13 @@ class InboxViewModel: ObservableObject{
                 if let index = recentMessages.firstIndex(where: { $0.chatPartnerId == message.chatPartnerId }) {
                     // Удаляем старое сообщение этого пользователя
                     recentMessages.remove(at: index)
+                    
+                    // Система непрочитанных сообщений
+                   // message.isNotRead = true
+                    //isNotReadPartner = true
+                    
+                    isNotRead[message.chatPartnerId] = true
+                    
                 }
                 
                 // Возвращаем пользователя для текущего сообщения
@@ -60,5 +68,8 @@ class InboxViewModel: ObservableObject{
         }
     }
 
-    
+    // Функция для сброса статуса непрочитанного сообщения
+        func markMessageAsRead(for chatPartnerId: String) {
+            isNotRead[chatPartnerId] = false
+        }
 }

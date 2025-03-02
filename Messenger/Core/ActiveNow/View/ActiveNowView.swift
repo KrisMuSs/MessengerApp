@@ -4,7 +4,8 @@ import SwiftUI
 
 struct ActiveNowView: View {
     @StateObject var viewModel = ActiveNowViewModel()
-    
+    @EnvironmentObject var inboxviewModel: InboxViewModel
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false){
             HStack(spacing: 32) {
@@ -29,15 +30,15 @@ struct ActiveNowView: View {
                                 .font(.footnote)
                                 .foregroundStyle(.gray)
                         }
+                        
                     }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        // Сбрасываем статус непрочитанного сообщения при переходе в чат
+                        inboxviewModel.markMessageAsRead(for: user.id)
+                    })
                 }
             }
             .padding()
         }
     }
-}
-
-
-#Preview {
-    ActiveNowView()
 }
