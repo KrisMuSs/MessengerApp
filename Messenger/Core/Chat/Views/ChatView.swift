@@ -6,7 +6,8 @@ struct ChatView: View {
     // @StateObject var viewModel = ChatViewModel(user: user) // Возникнет ошибка @StateObject нельзя инициализировать так
     @StateObject var viewModel: ChatViewModel
     let user: User
-    
+    @EnvironmentObject var inboxViewModel: InboxViewModel
+
     init(user: User) {
         self.user = user
        // @StateObject требует специальной инициализации через _viewModel и присваиваивание объекта через StateObject(wrappedValue:)
@@ -67,6 +68,14 @@ struct ChatView: View {
         }
         .navigationTitle(user.fullname)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            inboxViewModel.markMessageAsRead(for: user.id)
+            inboxViewModel.updateSelectedUserFull(user)
+                }
+        
+        .onDisappear {
+            inboxViewModel.updateSelectedUserUnFull(nil)
+                }
     }
 }
 

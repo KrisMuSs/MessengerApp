@@ -4,7 +4,6 @@ import SwiftUI
 struct NewMessageView: View {
     @State private var searchText = ""
     @StateObject private var viewModel = NewMessageViewModel()
-    @EnvironmentObject var inboxViewModel: InboxViewModel
     
     @Binding var selectedUser: User?
     @Environment(\.dismiss) var dismiss
@@ -43,7 +42,6 @@ struct NewMessageView: View {
                     }
                     .onTapGesture {
                         selectedUser = user
-                        inboxViewModel.markMessageAsRead(for: user.uid ?? "")
                         dismiss()
 
                         

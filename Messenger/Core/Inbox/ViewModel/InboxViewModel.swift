@@ -9,6 +9,11 @@ class InboxViewModel: ObservableObject{
     @Published var recentMessages = [Message]()
     @Published var isNotRead = [String: Bool]()
     
+    @Published var selectedUserVM: User? // Добавляем сюда
+    
+    // Для обновления активных пользователей
+    private var activeNowViewModel = ActiveNowViewModel()
+
     /// Переменная для хранения ссылок на активные процессы, которые следят за изменениями
     private var cancellables = Set<AnyCancellable>()
     
@@ -42,6 +47,17 @@ class InboxViewModel: ObservableObject{
             for i in 0 ..< messages.count {
                 let message = messages[i]
                 
+                print("DEBUG: Проверяем работает ли функция selectedUser = \(String(describing: selectedUserVM?.id)) и message.chatPartnerId = \(message.chatPartnerId)")
+
+                // Проверяем, не открыт ли уже чат с этим пользователем
+                            if selectedUserVM?.id == message.chatPartnerId {
+                                // Если чат открыт, не меняем статус непрочитанности
+                                print("DEBUG: Функция работает")
+
+                                continue
+                            }
+                
+                
                 // Находим старое сообщение этого пользователя, если оно уже есть в списке
                 if let index = recentMessages.firstIndex(where: { $0.chatPartnerId == message.chatPartnerId }) {
                     // Удаляем старое сообщение этого пользователя
@@ -51,7 +67,12 @@ class InboxViewModel: ObservableObject{
                    // message.isNotRead = true
                     //isNotReadPartner = true
                     
-                    isNotRead[message.chatPartnerId] = true
+                     isNotRead[message.chatPartnerId] = true
+                    
+                    // Проверяем, если текущий чат уже открыт с этим пользователем, не обновляем статус
+                    
+
+                               
                     
                 }
                 
@@ -68,8 +89,30 @@ class InboxViewModel: ObservableObject{
         }
     }
 
-    // Функция для сброса статуса непрочитанного сообщения
+    // Метод для сброса статуса непрочитанного сообщения
         func markMessageAsRead(for chatPartnerId: String) {
             isNotRead[chatPartnerId] = false
         }
+    
+
+       func updateSelectedUserFull(_ user: User?) {
+           print("DEBUG: Метод сработал selectedUserVM = \(String(describing: selectedUserVM?.id))")
+           self.selectedUserVM = user
+       }
+    
+    func updateSelectedUserUnFull(_ user: User?) {
+        print("DEBUG: Метод занулил selectedUserVM = \(String(describing: selectedUserVM?.id))")
+        self.selectedUserVM = nil
+    }
+    
+    @MainActor
+       func refreshActiveUsers() async {
+           // Обновляем активных пользователей при потягивании экрана
+           do {
+               try await activeNowViewModel.fetchUsers()
+           } catch {
+               print("Failed to refresh active users: \(error)")
+           }
+       }
+    
 }

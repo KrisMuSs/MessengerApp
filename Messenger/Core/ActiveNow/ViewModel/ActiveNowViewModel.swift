@@ -10,7 +10,7 @@ class ActiveNowViewModel: ObservableObject {
     }
     
     @MainActor
-    private func fetchUsers() async throws {
+     func fetchUsers() async throws {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         let users = try await UserService.fetchAllUsers(limit: 10)
         // Фильтруем массив, чтобы не получать в списке авторизованного пользователя

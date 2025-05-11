@@ -76,4 +76,36 @@ struct ChatService {
          }
     }
     
+    // Метод для удаления чата
+        func deleteChat() {
+            guard let currentUid = Auth.auth().currentUser?.uid else { return }
+            let chatPartnerId = chatPartner.id
+            
+            let currentUserMessagesRef = FirestoreConstants.MessageCollection.document(currentUid).collection(chatPartnerId)
+            let chatPartnerMessagesRef = FirestoreConstants.MessageCollection.document(chatPartnerId).collection(currentUid)
+            
+            let currentUserRecentRef = FirestoreConstants.MessageCollection.document(currentUid).collection("recent-messages").document(chatPartnerId)
+            let chatPartnerRecentRef = FirestoreConstants.MessageCollection.document(chatPartnerId).collection("recent-messages").document(currentUid)
+            
+            // Удаляем все сообщения в обеих коллекциях
+            currentUserMessagesRef.getDocuments { snapshot, error in
+                if let documents = snapshot?.documents {
+                    for document in documents {
+                        document.reference.delete()
+                    }
+                }
+            }
+            
+            chatPartnerMessagesRef.getDocuments { snapshot, error in
+                if let documents = snapshot?.documents {
+                    for document in documents {
+                        document.reference.delete()
+                    }
+                }
+            }
+            
+            // Удаляем записи о чате в коллекции "recent-messages"
+            currentUserRecentRef.delete()
+            chatPartnerRecentRef.delete()
+        }
 }

@@ -19,7 +19,6 @@ struct InboxView: View {
         NavigationStack{
                 List {
                     ActiveNowView()
-                        .environmentObject(viewModel)  // Передаем inboxViewModel в дочернее представление
                         .listRowSeparator(.hidden) // Скрываем разделители
                         .listRowInsets(EdgeInsets()) // Убираем стандартные отступы
                         .padding(.vertical)
@@ -39,28 +38,28 @@ struct InboxView: View {
                                     EmptyView()
                                 }.opacity(0.0)
                                 InboxRowView(message: message)
-                                    //.background(viewModel.isNotRead[message.chatPartnerId] == true ? Color.red : Color.clear)
-                                    .onTapGesture {
-                                        // Сбрасываем статус непрочитанного сообщения при переходе в чат
-                                        viewModel.markMessageAsRead(for: message.chatPartnerId)
-                                        selectedUser = message.user
-                                        showChat = true
-                                    }
                             }
                         }
                     }
                 }
                 .listStyle(PlainListStyle())
-
+                .refreshable {
+                    // Вызываем обновление данных активных пользователей
+                    await viewModel.refreshActiveUsers()
+                           }
+            
             // При выборе пользователя появляется чат
-            .onChange(of: selectedUser, perform: { newValue in
+                .onChange(of: selectedUser, perform: { newValue in
                 // Если у выбранного пользователя есть значение, то чат будет отображаться
                 showChat = newValue != nil
+
+
             })
             .navigationDestination(for: Message.self, destination: { message in
                 if let user = message.user {
                     
                     ChatView(user: user)
+                        .environmentObject(viewModel)  // Передаем inboxViewModel в дочернее представление
                 }
             })
             .navigationDestination(for: Route.self, destination: { route in
@@ -72,6 +71,7 @@ struct InboxView: View {
                         ProfileView(user: user)
                     case .chatView(let user):
                         ChatView(user: user)
+                            .environmentObject(viewModel)  // Передаем inboxViewModel в дочернее представление
                     }
                 
             })
@@ -79,12 +79,12 @@ struct InboxView: View {
             .navigationDestination(isPresented: $showChat, destination: {
                 if let user = selectedUser {
                     ChatView(user: user)
+                      .environmentObject(viewModel)  // Передаем inboxViewModel в дочернее представление
                 }
             })
             // Открытие экрана создания нового сообщения. Открывается поверх текущего интерфейса
             .fullScreenCover(isPresented: $showNewMessage, content: {
                 NewMessageView(selectedUser: $selectedUser)
-                    .environmentObject(viewModel)  // Передаем inboxViewModel в дочернее представление
                 
             })
             .navigationBarTitleDisplayMode(.inline)
