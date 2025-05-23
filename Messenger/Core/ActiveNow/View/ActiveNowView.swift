@@ -29,15 +29,12 @@ struct ActiveNowView: View {
                                 .font(.footnote)
                                 .foregroundStyle(.gray)
                         }
+                        
                     }
+    
                 }
             }
             .padding()
         }
     }
-}
-
-
-#Preview {
-    ActiveNowView()
 }

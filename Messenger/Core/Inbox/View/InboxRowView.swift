@@ -29,5 +29,12 @@ struct InboxRowView: View {
             .foregroundStyle(.gray)
         }
         .frame(height: 72)
+        .swipeActions {
+                   Button(role: .destructive) {
+                       ChatService(chatPartner: message.user!).deleteChat()
+                   } label: {
+                       Label("Delete", systemImage: "trash")
+                   }
+               }
     }
 }
