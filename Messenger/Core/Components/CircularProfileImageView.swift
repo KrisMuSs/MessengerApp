@@ -22,27 +22,46 @@ enum ProfileImageSize{
         }
     }
 
-
 struct CircularProfileImageView: View {
     var user: User?
     let size: ProfileImageSize
+    @State private var currentImage: Image?
     
     var body: some View {
-        if let imageUrl = user?.profileImageUrl{
-            Image(imageUrl)
-                .resizable()
-                .scaledToFill()
-                .frame(width: size.dimension, height: size.dimension)
-                .clipShape(Circle())
+        Group {
+            if let currentImage {
+                currentImage
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size.dimension, height: size.dimension)
+                    .clipShape(Circle())
+                   }
+                   else{
+                       Image(systemName: "person.circle.fill")
+                           .resizable()
+                           .frame(width: size.dimension, height: size.dimension)
+                           .foregroundStyle(Color(.systemGray4))
+                   }
         }
-        else{
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .frame(width: size.dimension, height: size.dimension)
-                .foregroundStyle(Color(.systemGray4))
+        .onAppear {
+            loadImage()
+        }
+        .onReceive(ImageFileManager.shared.imageDidChange) { changedUserID in
+            if user?.id == changedUserID {
+                loadImage()
+            }
         }
     }
+    
+    private func loadImage() {
+        guard let user = user else {
+            currentImage = nil
+            return
+        }
+        currentImage = ImageFileManager.shared.loadImage(for: user.id)
+    }
 }
+
 
 #Preview {
     CircularProfileImageView(user: User.MOCK_USER, size: .xLarge)
