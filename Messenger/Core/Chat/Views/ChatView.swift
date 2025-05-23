@@ -36,7 +36,7 @@ struct ChatView: View {
                 // когда пользователь прокручивает список, LazyVStack подгружает только те сообщения, которые попадают в область видимости
                 LazyVStack {
                     ForEach(viewModel.messages) { message in
-                        ChatMessageCell(message: message)
+                        ChatMessageCell(message: message, user: user)
                 }
                 }
                
@@ -62,7 +62,11 @@ struct ChatView: View {
                         .fontWeight(.semibold)
                 }
                 .padding(.horizontal)
-                
+               // Модификатор .disabled(...) делает кнопку неактивной (серой и недоступной для нажатия), если переданное условие - true.
+                //.trimmingCharacters(in: .whitespacesAndNewlines) Убирает все пробелы и переносы строк в начале и в конце строки.
+                // .isEmpty - Проверяет, пуста ли строка после удаления пробелов и переводов строки.
+                .disabled(viewModel.messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
             }
             .padding()
         }

@@ -5,15 +5,13 @@ import PhotosUI
 
 
 struct ProfileView: View {
-    
     @State var viewModel = ProfileViewModel()
     let user: User
     
     var body: some View {
-        //header
-        VStack{
-            PhotosPicker(selection: $viewModel.selectedItem ){
-                if let profileImage = viewModel.profileImage{
+        VStack {
+            PhotosPicker(selection: $viewModel.selectedItem) {
+                if let profileImage = viewModel.profileImage {
                     profileImage
                         .resizable()
                         .scaledToFill()
@@ -24,10 +22,11 @@ struct ProfileView: View {
                 }
             }
             Text(user.fullname)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-            
+                .font(.title2)
+                .fontWeight(.semibold)
+        }
+        .onAppear {
+            viewModel.configure(with: user)
         }
         
         
