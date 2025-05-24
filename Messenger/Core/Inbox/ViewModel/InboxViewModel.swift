@@ -3,6 +3,9 @@ import Foundation
 import Combine
 import Firebase
 
+
+
+
 /// Этот класс отслеживает изменения информации о пользователе и обновляет интерфейс при их появлении
 class InboxViewModel: ObservableObject{
     @Published var currentUser: User?

@@ -32,10 +32,12 @@ class UserService {
         return users
     }
     
+    // @escaping - загрузка данных из интернета занимает время, и функция завершится раньше, чем придут данные
+    // @escaping означает, что completion будет вызван позже, когда данные действительно загрузятся
     static func fetchUser(withUid uid: String, completion: @escaping(User) -> Void) {
-        FirestoreConstants.UserCollections.document(uid).getDocument { snapshot, _ in
-            guard let user = try? snapshot?.data(as: User.self) else { return }
-            completion(user)
+        FirestoreConstants.UserCollections.document(uid).getDocument { snapshot, _ in // обращается к конкретному документу пользователя в Firestore
+            guard let user = try? snapshot?.data(as: User.self) else { return } // преобразует данные в объект типа User
+            completion(user) // возвращает полученного пользователя через замыкание (completion)
             }
         }
     }
